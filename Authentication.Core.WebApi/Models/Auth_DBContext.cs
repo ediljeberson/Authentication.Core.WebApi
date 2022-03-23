@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Authentication.Core.WebApi.Models
 {
-    public partial class DataContext : DbContext
+    public partial class Auth_DBContext : DbContext
     {
-        public DataContext()
+        public Auth_DBContext()
         {
         }
 
-        public DataContext(DbContextOptions<DataContext> options)
+        public Auth_DBContext(DbContextOptions<Auth_DBContext> options)
             : base(options)
         {
         }
