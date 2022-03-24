@@ -43,14 +43,15 @@ namespace Authentication.Core.WebApi
             //DB Context
             services.AddDbContext<Auth_DBContext>(Options =>
             {
-                Options.UseSqlServer("Data Source=Jeberson-A-J\\SQLEXPRESS;Initial Catalog=api;Integrated Security=True;");
+                //Options.UseSqlServer("Data Source=Jeberson-A-J\\SQLEXPRESS;Initial Catalog=api;Integrated Security=True;");
+                Options.UseSqlServer("Data Source = 0.tcp.ngrok.io,17372; User Id = Jeberson_A_J; Password =Welcome@123; Initial Catalog = api; Integrated Security = False;");
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsProduction()) // env.IsProduction() is added to get the swagger UI in Production environment
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
