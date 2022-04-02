@@ -1,6 +1,7 @@
 ﻿using Authentication.Core.WebApi.Dto;
 using Authentication.Core.WebApi.Handlers;
 using Authentication.Core.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 //using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,8 @@ namespace Authentication.Core.WebApi.Controllers
             this._context = context;
             this._jWTSettings = options.Value;
         }
-
+        
+        [AllowAnonymous]
         [HttpPost("Authenticate")]
         public IActionResult Authenticate([FromBody] UserDto user)
         {

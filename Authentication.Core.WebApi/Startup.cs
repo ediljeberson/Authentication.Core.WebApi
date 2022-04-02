@@ -1,6 +1,7 @@
 using Authentication.Core.WebApi.Handlers;
 using Authentication.Core.WebApi.Models;
 using Jose;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,10 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Authentication.Core.WebApi
@@ -31,7 +34,6 @@ namespace Authentication.Core.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -44,13 +46,30 @@ namespace Authentication.Core.WebApi
             services.AddDbContext<Auth_DBContext>(Options =>
             {
                 Options.UseSqlServer("Data Source=Jeberson-A-J\\SQLEXPRESS;Initial Catalog=api;Integrated Security=True;");
+                //Options.UseSqlServer("Data Source = 0.tcp.ngrok.io,17372; User Id = Jeberson_A_J; Password =Welcome@123; Initial Catalog = api; Integrated Security = False;");
+            });
+            //JWT Authentication
+            var security_Key = Configuration.GetValue<string>("JWTSettings:SecretKey");
+            services.AddAuthentication(auth=> {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(auth => {
+                auth.RequireHttpsMetadata = true;
+                auth.SaveToken = true;
+                auth.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(security_Key)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsProduction()) // env.IsProduction() is added to get the swagger UI in Production environment
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
@@ -60,6 +79,8 @@ namespace Authentication.Core.WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
