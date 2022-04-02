@@ -23,7 +23,7 @@ namespace Authentication.Core.WebApi.Controllers
             this._context = context;
             this._jWTSettings = options.Value;
         }
-        
+
         [AllowAnonymous]
         [HttpPost("Authenticate")]
         public IActionResult Authenticate([FromBody] UserDto user)
@@ -53,7 +53,7 @@ namespace Authentication.Core.WebApi.Controllers
             };
             var token = tokenhadler.CreateToken(tokenDescripter);
             string finaltoken = tokenhadler.WriteToken(token);
-            
+
             return Ok(finaltoken);
         }
     }
